@@ -34,6 +34,10 @@ sudo apt-get update -y
 sudo apt-get upgrade -y
 echo "db is done"
 exit
+EOF
 
-
+ssh vagrant@192.168.33.12 << EOF
+cd /etc/ansible
+ansible-playbook install.yml
+exit
 EOF
