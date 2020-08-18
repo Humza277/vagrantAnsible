@@ -1,5 +1,6 @@
 #!/bin/bash
 
+vagrant up
 ssh vagrant@192.168.33.12 << EOF
 sudo apt-get install software-properties-common -y
 sudo apt-get install tree -y

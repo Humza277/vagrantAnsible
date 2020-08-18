@@ -218,7 +218,9 @@ ansible-playbook
 
 written in YAML
 allow you to provision multiple servers :
-   
+192.168.33.10 - web
+192.168.33.11 - db
+192.168.33.12 - aws
 
 
 
