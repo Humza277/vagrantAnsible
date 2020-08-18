@@ -191,3 +191,85 @@ allow you to provision multiple servers :
   - name: Install npm
     apt: pkg=npm state=present
 
+
+scp -r app/ ubuntu@192.168.33.10:/home/ubuntu/
+
+
+
+
+  GNU nano 2.9.3                                                                                                                                                                           install.yml                                                                                                                                                                            Modified
+
+
+---
+#where do we want to install
+
+- hosts: web
+
+# get the facts
+  gather_facts: yes
+
+#  work from root user
+  become: true
+
+# what do we want asible to do for us in this playbook
+
+  tasks:
+  - name: Install nginx
+    # gets the nginx package, present = install
+    apt: pkg=nginx state=present
+# command to run playbook : ansible=playbook 'name of the file
+  - name: Install Git
+    apt: pkg=git state=presest
+
+  - name: Install nodejs dependancies
+    command: apt-get install software-properties-common -y
+    ignore_errors: True
+
+  - name: download nodejs dependancies
+    shell: curl -sl https://deb.nodesource.com/setup_12.x | sudo -E bash -
+    ignore_errors: True
+
+  - name: install nodejs
+    apt: pkg=nodejs state=present
+
+  - name: Disable NGINX Default Virtual Host
+    shell: rm /etc/nginx/sites-enabled/default
+
+
+  - name: Create Nginx Conf File for port 80
+    shell: cp /home/vagrant/nginx
+
+  - name: Amend Nginx file
+    become: yes
+    blockinfile:
+         path: /etc/nginx/sites-available/reverse-proxy.conf
+         marker: ""
+         block: |
+          server {
+              listen 80;
+              server_name development.local;
+                 location / {
+                   proxy_pass http://127.0.0.1:3000/;
+
+  - name: Link Nginx
+    become: yes
+    command:
+      cnd: ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
+
+
+  - name: Make sure Nginx service is running
+    become: yes
+    service:
+      name: nginx
+      state: restarted
+      enabled: yes
+
+
+  - name: Install npm
+    apt: pkg=npm state=present
+
+
+
+
+
+
