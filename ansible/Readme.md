@@ -1,6 +1,6 @@
 # What is Ansible?
 
-![ansible](src="/images/ansible.png")
+![ansible](src=/images/ansible.png)
 
 
 Ansible is an open-source, configuration management tool to provision IT environments, deploy software or be integrated to CI/CD pipelines.
