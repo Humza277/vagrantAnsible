@@ -8,7 +8,7 @@ sudo apt-add-repository--yes--update ppa:ansible/ansible
 sudo apt-get install ansible -y
 sudo apt-get install sshpass -y
 
-echo "Bob was here"
+echo "AWS IS DONE"
 
 sudo su
 cd /etc/ansible
@@ -20,20 +20,20 @@ echo  "[aws]
 192.168.33.12 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant" >> hosts
 cd ..
 
-echo "COPY IS DONE"
+echo "HOSTS HAVE BEEN ADDED"
 
 #go into web server
 sshpass -p 'vagrant' ssh vagrant@192.168.33.10
 sudo apt-get update -y
 sudo apt-get upgrade -y
-echo "web is done"
+echo "WEB IS DONE"
 exit
 
 #go into dev server
 sshpass -p 'vagrant' ssh vagrant@192.168.33.11
 sudo apt-get update -y
 sudo apt-get upgrade -y
-echo "db is done"
+echo "DATABASE IS DONE"
 exit
 EOF
 

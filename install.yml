@@ -91,12 +91,18 @@
       dest: /etc/nginx/sites-available/reverseproxy.conf
       state: link
 
+
+
   - name: nginx bug workaround
     shell: |
       sudo mkdir /etc/systemd/system/nginx.service.d
+        # prints a inline statement to restart the ngix module
         printf "[Service]\nExecStartPost=/bin/sleep 0.1\n" | \
+          # overrides the old file with our new one
           sudo tee /etc/systemd/system/nginx.service.d/override.conf
+      # restart the entire daemon
       sudo systemctl daemon-reload
+      # restart the nginx module
       sudo systemctl restart nginx
 
   - name: Install nodejs

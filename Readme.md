@@ -1,6 +1,6 @@
 # What is Ansible?
 
-![ansible](https://github.com/Humza277/vagrantAnsible/blob/master/app/public/images/ansible.png)
+![ansible](app/public/images/ansible.png)
 
 
     Ansible is an open-source, configuration management tool to provision IT environments, deploy software or be integrated to CI/CD pipelines.
@@ -84,87 +84,6 @@
     3.Avoid written documentation, since the code itself will document the state of the machine. This is particularly powerful because it means, for the first time, that infrastructure documentation is always up to date. 
     4.Enables collaboration around infrastructure configuration and provisioning, most notably between dev and ops.
 
-# Walkthrough
-We changed the code in our vagrant file 
-
-ran vagrant up - to provision our servers
-vagrant status to see all of the vms 
-
-ssh into all the vms and update and upgrade them all 
-
-installing ansible 
-   
-ssh into the aws server - aws server is the controller
-    
-    vagrant ssh aws
-    run sudo apt-get install software-properties-common -y
-
-install ansible
-
-download repo
-    
-    sudo apt-add-repository --yes --update ppa:ansible/ansible;
-
-to install
-     
-     sudo apt-get install ansible -y
-
-install tree - is a package manager - lists the files in a nice way 
-    
-    sudo apt-get install tree -y
-
-Then CD to the ansible folder
-
-    cd /etc/ansible
-
-Pings the hosts    
-    
-    ansible all -m ping
-   
-As we have not configured the hosts, it will not register
-    
-To configure the controller
-    
-    sudo nano hosts
-add these to the file- tells the controller where the other servers are 
-    
-    [web]
-    192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
-    
-    [db]
-    192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
-    
-    [aws]
-    192.168.33.12 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
-    
-
-we have now told the controller where our other two servers are 
-now we need to ping them
-    
-    ansible all -m ping
-    
-if it is still not working, ssh into them from the controller and run    
-    
-    
-ssh vagrant@web 
-    
-    password is vagrant 
-
-aws to web
-    
-    ssh vagrant@192.168.33.10
-    update
-    exit
-
-aws to db
-    
-    ssh vagrant@192.168.33.11
-    update
-    exit
-
-ansible all -m ping
-
-should be all working now 
 
 # Ansible Ad-Hoc Commands
 
@@ -217,10 +136,15 @@ ansible-playbook
 # Playbooks
 
 written in YAML
+
 allow you to provision multiple servers :
-192.168.33.10 - web
-192.168.33.11 - db
-192.168.33.12 - aws
+
+- 192.168.33.10 - web
+
+- 192.168.33.11 - db
+
+- 192.168.33.12 - aws
+
 
 
 
