@@ -1,4 +1,4 @@
-  GNU nano 2.9.3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    install.yml
+  GNU nano 2.9.3                                                                                                                                                                                                                                                                                                                                                                                                                                                                        install.yml
 
 # This is a YAML file to install nginx onto oue web VM using YAML
 ---
@@ -117,6 +117,12 @@
       npm install mongoose -y
 
 
+  - name: Copy web app into web virtual machine
+    synchronize:
+      src: /home/vagrant/app
+      dest: /home/vagrant
+
+
   - name: set up app
     shell: |
       cd app/
@@ -127,6 +133,24 @@
     environment:
       DB_HOST: mongodb://vagrant@192.168.33.11:27017/posts?authSource=admin
     become_user: root
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
