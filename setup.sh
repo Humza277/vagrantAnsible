@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#vagrant reload
 vagrant up
 ssh vagrant@192.168.33.12 << EOF
 sudo apt-get install software-properties-common -y
@@ -37,6 +38,24 @@ echo "DATABASE IS DONE"
 exit
 EOF
 
+
+scp -r ~/Documents/vagrant-Ansible/install.yml vagrant@192.168.33.12:/home/vagrant/
+
+#apt-get install rsync
+#rsync --chmod=u+rwx ~/Documents/vagrant-Ansible/install.yml/ vagrant@192.168.33.12:/etc/ansible
+
+ssh vagrant@192.168.33.12 << EOF
+sudo mv install.yml /etc/ansible/
+exit
+EOF
+
+ssh vagrant@192.168.33.12 << EOF
+sudo su
+cd /etc/ansible
+echo "[defaults]
+host_key_checking = false" >> ansible.cfg
+exit
+EOF
 
 ssh vagrant@192.168.33.12 << EOF
 cd /etc/ansible

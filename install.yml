@@ -1,6 +1,5 @@
-  GNU nano 2.9.3                                                                                                                                                                                                                                                                                                                                                                                                                                                                        install.yml
+#This is a YAML file to install nginx onto oue web VM using YAML
 
-# This is a YAML file to install nginx onto oue web VM using YAML
 ---
 
 - hosts: db
@@ -23,7 +22,6 @@
       path: /etc/mongodb.conf
       state: touch
       mode: u=rw,g=r,o=r
-
 
   - name: Insert multiple lines and Backup
     blockinfile:
@@ -57,6 +55,12 @@
 # In this case our only task is to install nginx
 
   tasks:
+
+  - name: Copy web app into web virtual machine
+    synchronize:
+      src: /home/vagrant/app
+      dest: /home/vagrant
+
   - name: Install nginx
     apt: pkg=nginx state=present
     become_user: root
@@ -66,108 +70,68 @@
       path: /etc/nginx/sites-enabled/default
       state: absent
 
-  - name: Touch a file, using symbolic modes to set the permissions (equivalent to 0644)
-    file:
-      path: /etc/nginx/sites-enabled/reverseproxy.conf
-      state: touch
-      mode: '666'
-
-
-  - name: Insert multiple lines and Backup
-    blockinfile:
-      path: /etc/nginx/sites-enabled/reverseproxy.conf
-      block: |
-        server{
-          listen 80;
-          server_name development.local;
-          location / {
-              proxy_pass http://127.0.0.1:3000;
-          }
-        }
+  #- name: Copy nginx default file
+   # shell: sudo cp /home/vagrant/app/nginx.conf /etc/nginx/sites-available/default.conf
 
   - name: Create a symbolic link
     file:
-      src: /etc/nginx/sites-enabled/reverseproxy.conf
-      dest: /etc/nginx/sites-available/reverseproxy.conf
+      src: /home/vagrant/app/nginx.conf
+      dest: /etc/nginx/sites-available/nginx.conf
       state: link
-
-
+    become_user: root
 
   - name: nginx bug workaround
     shell: |
       sudo mkdir /etc/systemd/system/nginx.service.d
-        # prints a inline statement to restart the ngix module
         printf "[Service]\nExecStartPost=/bin/sleep 0.1\n" | \
-          # overrides the old file with our new one
           sudo tee /etc/systemd/system/nginx.service.d/override.conf
-      # restart the entire daemon
       sudo systemctl daemon-reload
-      # restart the nginx module
       sudo systemctl restart nginx
 
   - name: Install nodejs
     apt: pkg=nodejs state=present
 
-  - name: Install NPM
-    apt: pkg=npm state=present
-
 # Downloading pm2
-  - name: Install pm2
-    npm:
-      name: pm2
-      global: yes
-
   - name: download latest npm
     shell: |
       npm install -g npm@latest
       npm install mongoose -y
 
+  - name: Install pm2
+    npm:
+      name: pm2
+      global: yes
 
-  - name: Copy web app into web virtual machine
-    synchronize:
-      src: /home/vagrant/app
-      dest: /home/vagrant
+  - name: export db host variable for database
+    shell: echo "DB_HOST=mongodb://192.168.33.11:27017/posts" >> ~/.bashrc
 
+  - name: Stop pm2
+    shell: pm2 stop all
+    args:
+      chdir: /home/vagrant/app/
+    ignore_errors: yes
 
-  - name: set up app
-    shell: |
-      cd app/
-      npm install
-      node seeds/seed.js
-      pm2 kill
-      pm2 start app.js
-    environment:
-      DB_HOST: mongodb://vagrant@192.168.33.11:27017/posts?authSource=admin
-    become_user: root
+  - name: Install Forever
+    npm:
+      name: forever
+      global: yes
 
+  - name: NODE | Seed Posts
+    shell: node seed.js
+    args:
+      chdir: /home/vagrant/app/seeds
 
+  - name: Install npm updates
+    shell: npm install
+    args:
+      chdir: /home/vagrant/app
 
+  - name: start app -shell
+    shell:
+      cmd: . ~/.bashrc && forever start app.js
+      chdir: /home/vagrant/app
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  - name: node seeds -shell
+    shell:
+      cmd: . ~/.bashrc && node seed.js
+      chdir: /home/vagrant/app/seeds
